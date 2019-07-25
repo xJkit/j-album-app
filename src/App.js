@@ -7,6 +7,7 @@
  */
 
 import React, { Fragment, useEffect, useState, useRef } from 'react';
+import { createStackNavigator, createAppContainer } from 'react-navigation';
 import instagramLogo from './assets/instagram_logo.png';
 import {
   StyleSheet,
@@ -21,7 +22,9 @@ function useAlbums(quantity) {
   const [albums, setAlbums] = useState([]);
   useEffect(() => {
     const getData = async () => {
-      const response = await fetch('https://jsonplaceholder.typicode.com/photos');
+      const response = await fetch(
+        'https://jsonplaceholder.typicode.com/photos'
+      );
       const albumResponses = await response.json();
       setAlbums(albumResponses);
     };
@@ -30,7 +33,7 @@ function useAlbums(quantity) {
   return albums.slice(0, quantity);
 }
 
-const App = () => {
+const HomeScreen = () => {
   const albums = useAlbums(30);
   const isLoading = albums.length === 0;
   return (
@@ -80,4 +83,15 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+const AppNavigator = createStackNavigator(
+  {
+    Home: {
+      screen: HomeScreen,
+    },
+  },
+  {
+    initialRouteName: 'Home',
+  }
+);
+
+export default createAppContainer(AppNavigator);
