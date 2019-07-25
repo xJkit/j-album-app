@@ -4,12 +4,14 @@
   "private": true,
   "scripts": {
     "start": "react-native start",
-    "start:ios": "react-native run-ios",
+    "start:ios": "react-native run-ios --simulator=\"iPhone 8\"",
+    "link": "cd ios && pod install",
     "test": "jest"
   },
   "dependencies": {
     "react": "16.8.6",
-    "react-native": "0.60.4"
+    "react-native": "0.60.4",
+    "react-native-svg": "^9.5.3"
   },
   "devDependencies": {
     "@babel/core": "^7.5.0",
@@ -21,6 +23,7 @@
     "eslint-plugin-prettier": "^3.1.0",
     "jest": "^24.1.0",
     "metro-react-native-babel-preset": "^0.54.1",
+    "react-native-svg-transformer": "^0.13.0",
     "react-test-renderer": "16.8.6"
   },
   "jest": {
