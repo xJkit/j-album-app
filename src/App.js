@@ -1,11 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
-
 import React, { Fragment, useEffect, useState, useRef } from 'react';
 import { createStackNavigator, createAppContainer } from 'react-navigation';
 import instagramLogo from './assets/instagram_logo.png';
@@ -16,9 +8,11 @@ import {
   Text,
   StatusBar,
   Image,
+  TouchableWithoutFeedback,
 } from 'react-native';
+import AlbumDetailView from './AlbumDetailView';
 
-function useAlbums(quantity) {
+const useAlbums = quantity => {
   const [albums, setAlbums] = useState([]);
   useEffect(() => {
     const getData = async () => {
@@ -31,22 +25,14 @@ function useAlbums(quantity) {
     getData();
   }, []);
   return albums.slice(0, quantity);
-}
+};
 
-const HomeScreen = () => {
+function HomeScreen(props) {
   const albums = useAlbums(30);
   const isLoading = albums.length === 0;
   return (
     <Fragment>
       <StatusBar barStyle="dark-content" />
-      <View style={styles.header}>
-        <Image
-          source={instagramLogo}
-          style={{ height: '60%' }}
-          resizeMethod="auto"
-          resizeMode="contain"
-        />
-      </View>
       <View style={styles.container}>
         <ScrollView style={{ flex: 1 }}>
           {isLoading && (
@@ -55,13 +41,21 @@ const HomeScreen = () => {
           {!isLoading && (
             <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap' }}>
               {albums.map(album => (
-                <Image
+                <TouchableWithoutFeedback
+                  onPress={() =>
+                    props.navigation.navigate('AlbumDetailView', {
+                      id: album.id,
+                    })
+                  }
                   key={album.id}
-                  source={{ uri: album.thumbnailUrl }}
-                  resizeMethod="auto"
-                  resizeMode="cover"
-                  style={{ width: '33%', height: 120 }}
-                />
+                >
+                  <Image
+                    source={{ uri: album.thumbnailUrl }}
+                    resizeMethod="auto"
+                    resizeMode="cover"
+                    style={{ width: '33%', height: 120 }}
+                  />
+                </TouchableWithoutFeedback>
               ))}
             </View>
           )}
@@ -69,24 +63,36 @@ const HomeScreen = () => {
       </View>
     </Fragment>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
   },
-  header: {
-    height: 72,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
 });
+
+HomeScreen.navigationOptions = ({ navigation }) => {
+  return {
+    headerTitle: (
+      <Image
+        source={instagramLogo}
+        style={{ height: '80%' }}
+        resizeMethod="auto"
+        resizeMode="contain"
+      />
+    ),
+    headerBackTitle: null,
+  };
+};
 
 const AppNavigator = createStackNavigator(
   {
     Home: {
       screen: HomeScreen,
+    },
+    AlbumDetailView: {
+      screen: AlbumDetailView,
     },
   },
   {
