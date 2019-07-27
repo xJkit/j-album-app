@@ -1,5 +1,5 @@
-import React, { useReducer, useEffect } from 'react';
-import { ActivityIndicator, View, Text, Image } from 'react-native';
+import React, { useReducer, useEffect, useState } from 'react';
+import { ActivityIndicator, View, Text, Image, ScrollView, Dimensions } from 'react-native';
 import arrowBackImg from './assets/arrow_back.png';
 
 const initialState = {
@@ -28,6 +28,7 @@ const albumReducer = (state, action) => {
 function AlbumDetailView(props) {
   const albumUID = props.navigation.getParam('id');
   const [state, dispatch] = useReducer(albumReducer, initialState);
+  const [isImageLoaded, setImageLoaded] = useState(false);
   useEffect(() => {
     const getAlbumInfo = async () => {
       const responses = await Promise.all([
@@ -50,14 +51,28 @@ function AlbumDetailView(props) {
     };
     getAlbumInfo();
   }, [albumUID]);
-
   return (
-    <>
-      <View style={{ flex: 1 }}>
-        {state.isFetching && <ActivityIndicator style={{ marginTop: 16 }} />}
-        {!!state.albumTitle && <Text>{state.albumTitle}</Text>}
-      </View>
-    </>
+    <View style={{ flex: 1 }}>
+      {(state.isFetching || !isImageLoaded) && <ActivityIndicator style={{ position: 'absolute', top: 16, left: '48%' }} />}
+      {!state.isFetching && (
+        <ScrollView>
+          <Image
+            source={{ url: state.imgUrl }}
+            style={{ width: '100%', height: 300 }}
+            resizeMode="cover"
+            onLoad={() => setImageLoaded(true)}
+          />
+          {isImageLoaded && (
+            <>
+              <Text>{state.albumTitle}</Text>
+              <Text>{state.albumName}</Text>
+              <Text>{state.singerName}</Text>
+              <Text>{state.website}</Text>
+            </>
+          )}
+        </ScrollView>
+      )}
+    </View>
   );
 }
 
