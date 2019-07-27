@@ -1,27 +1,63 @@
-import React, { useState, useEffect } from 'react';
+import React, { useReducer, useEffect } from 'react';
 import { View, Text, Image } from 'react-native';
 import arrowBackImg from './assets/arrow_back.png';
 
+const initialState = {
+  isFetching: false,
+  imgUrl: '', // photos.url,
+  albumTitle: '', // albums.title
+  albumName: '', // users.username
+  singerName: '', // users.name
+  website: '', // users.website
+}
+
+const actionTypes = {
+  TOGGLE_FETCHING: 'TOGGLE_FETCHING',
+  GET_ALBUM_INFO: 'GET_ALBUM_INFO',
+};
+
+const albumReducer = (state, action) => {
+  switch (action.type) {
+    case actionTypes.TOGGLE_FETCHING:
+      return { ...state, isFetching: !state.isFetching };
+    case actionTypes.GET_ALBUM_INFO:
+      return { ...state, ...action.payload };
+    default:
+      throw new Error();
+  }
+}
+
 function AlbumDetailView(props) {
   const albumUID = props.navigation.getParam('id');
-  const [title, setTitle] = useState('');
+  const [state, dispatch] = useReducer(albumReducer, initialState);
   useEffect(() => {
-    const getAlbum = async () => {
-      const response = await fetch(
-        `https://jsonplaceholder.typicode.com/photos/${albumUID}`
-      );
-      const data = await response.json();
-      setTitle(data.title);
+    dispatch({ type: actionTypes.TOGGLE_FETCHING });
+    const getAlbumInfo = async () => {
+      const responses = await Promise.all([
+        fetch(`https://jsonplaceholder.typicode.com/photos/${albumUID}`),
+        fetch(`https://jsonplaceholder.typicode.com/albums/${albumUID}`),
+        fetch(`https://jsonplaceholder.typicode.com/users/${albumUID}`),
+      ]);
+      const [photos, albums, users] = await Promise.all(responses.map(response => response.json()));
+      dispatch({
+        type: actionTypes.GET_ALBUM_INFO,
+        payload: {
+          imgUrl: photos.url, // photos.url,
+          albumTitle: albums.title,
+          albumName: users.username,
+          singerName: users.name,
+          website: users.website,
+        },
+      });
     };
-    getAlbum();
+    getAlbumInfo();
   }, [albumUID]);
 
-  console.log(title);
   return (
     <>
       <View style={{ flex: 1 }}>
-        {!title && <Text>Loading</Text>}
-        {!!title && <Text>{title}</Text>}
+        {!state.albumTitle && <Text>Loading</Text>}
+        {!!state.albumTitle && <Text>{state.albumTitle}</Text>}
       </View>
     </>
   );

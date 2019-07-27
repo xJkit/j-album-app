@@ -1,0 +1,11 @@
+{
+  "eslint.enable": true,
+  "files.exclude": {
+    "node_modules": true,
+    ".npm-offline-cache": true
+  },
+  "editor.formatOnSave": false,
+  "[javascript]": {
+    "editor.formatOnSave": true
+  }
+}
