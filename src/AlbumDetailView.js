@@ -1,9 +1,9 @@
 import React, { useReducer, useEffect } from 'react';
-import { View, Text, Image } from 'react-native';
+import { ActivityIndicator, View, Text, Image } from 'react-native';
 import arrowBackImg from './assets/arrow_back.png';
 
 const initialState = {
-  isFetching: false,
+  isFetching: true,
   imgUrl: '', // photos.url,
   albumTitle: '', // albums.title
   albumName: '', // users.username
@@ -18,8 +18,6 @@ const actionTypes = {
 
 const albumReducer = (state, action) => {
   switch (action.type) {
-    case actionTypes.TOGGLE_FETCHING:
-      return { ...state, isFetching: !state.isFetching };
     case actionTypes.GET_ALBUM_INFO:
       return { ...state, ...action.payload };
     default:
@@ -31,7 +29,6 @@ function AlbumDetailView(props) {
   const albumUID = props.navigation.getParam('id');
   const [state, dispatch] = useReducer(albumReducer, initialState);
   useEffect(() => {
-    dispatch({ type: actionTypes.TOGGLE_FETCHING });
     const getAlbumInfo = async () => {
       const responses = await Promise.all([
         fetch(`https://jsonplaceholder.typicode.com/photos/${albumUID}`),
@@ -42,6 +39,7 @@ function AlbumDetailView(props) {
       dispatch({
         type: actionTypes.GET_ALBUM_INFO,
         payload: {
+          isFetching: false,
           imgUrl: photos.url, // photos.url,
           albumTitle: albums.title,
           albumName: users.username,
@@ -56,7 +54,7 @@ function AlbumDetailView(props) {
   return (
     <>
       <View style={{ flex: 1 }}>
-        {!state.albumTitle && <Text>Loading</Text>}
+        {state.isFetching && <ActivityIndicator style={{ marginTop: 16 }} />}
         {!!state.albumTitle && <Text>{state.albumTitle}</Text>}
       </View>
     </>
