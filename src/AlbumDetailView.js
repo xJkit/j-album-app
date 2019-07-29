@@ -1,6 +1,17 @@
 import React, { useReducer, useEffect, useState } from 'react';
-import { ActivityIndicator, View, Text, Image, ScrollView, Dimensions } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import {
+  Animated,
+  Modal,
+  ActivityIndicator,
+  View,
+  Text,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  Easing,
+} from 'react-native';
+import { Avatar, Button } from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Feather';
 import arrowBackImg from './assets/arrow_back.png';
 
 const initialState = {
@@ -26,9 +37,53 @@ const albumReducer = (state, action) => {
   }
 }
 
+class Menu extends React.Component {
+  state = {
+    paddingBottom: new Animated.Value(0),
+  };
+
+  componentDidMount() {
+    Animated.timing(
+      // Animate value over time
+      this.state.paddingBottom, // The value to drive
+      {
+        toValue: 64, // Animate to final value of 1
+        easing: Easing.linear,
+        duration: 150
+      },
+    ).start(); // Start the animation
+  }
+
+  render() {
+    return (
+      <Animated.View
+        animation="slideInDown"
+        style={{
+          flex: 1,
+          justifyContent: 'flex-end',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          paddingBottom: this.state.paddingBottom,
+        }}
+      >
+        <Button
+          onPress={() => this.props.setModalOpen(false)}
+          title="關閉"
+          type="solid"
+          buttonStyle={{
+            backgroundColor: 'white',
+          }}
+          titleStyle={{ color: 'red' }}
+        />
+      </Animated.View>
+    );
+  }
+}
+
+
 function AlbumDetailView(props) {
   const albumUID = props.navigation.getParam('id');
   const [state, dispatch] = useReducer(albumReducer, initialState);
+  const [isModalOpen, setModalOpen] = useState(false);
   const [isImageLoaded, setImageLoaded] = useState(false);
   useEffect(() => {
     const getAlbumInfo = async () => {
@@ -54,26 +109,52 @@ function AlbumDetailView(props) {
   }, [albumUID]);
   return (
     <View style={{ flex: 1 }}>
+      <Modal
+        animationType="fade"
+        visible={isModalOpen}
+        transparent={true}
+      >
+        <Menu setModalOpen={setModalOpen} />
+      </Modal>
       {(state.isFetching || !isImageLoaded) && <ActivityIndicator style={{ position: 'absolute', top: 16, left: '48%' }} />}
-      {!state.isFetching && (
-        <ScrollView>
-          <Image
-            source={{ url: state.imgUrl }}
-            style={{ width: '100%', height: 300 }}
-            resizeMode="cover"
-            onLoad={() => setImageLoaded(true)}
-          />
-          {isImageLoaded && (
-            <>
-              <Text>{state.albumTitle}</Text>
-              <Text>{state.albumName}</Text>
-              <Text>{state.singerName}</Text>
-              <Text>{state.website}</Text>
-              <Icon name="rocket" size={30} />
-            </>
-          )}
-        </ScrollView>
-      )}
+      {
+        !state.isFetching && (
+          <ScrollView>
+            <View style={{ flexDirection: 'row', alignItems: 'center', paddingTop: 4, paddingBottom: 4 }}>
+              <Avatar
+                rounded
+                source={{
+                  uri:
+                    'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
+                }}
+              />
+              <Text style={{ marginLeft: 8 }}>{state.singerName}</Text>
+              <TouchableOpacity
+                style={{ marginLeft: 'auto', marginRight: 8 }}
+                onPress={() => setModalOpen(true)}
+              >
+                <Icon
+                  name="more-horizontal"
+                  size={22}
+                />
+              </TouchableOpacity>
+            </View>
+            <Image
+              source={{ url: state.imgUrl }}
+              style={{ width: '100%', height: 300 }}
+              resizeMode="cover"
+              onLoad={() => setImageLoaded(true)}
+            />
+            {isImageLoaded && (
+              <>
+                <Text>{state.albumTitle}</Text>
+                <Text>{state.albumName}</Text>
+                <Text>{state.website}</Text>
+              </>
+            )}
+          </ScrollView>
+        )
+      }
     </View>
   );
 }
