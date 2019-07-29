@@ -1,5 +1,10 @@
 import React, { Fragment, useEffect, useState, useRef } from 'react';
-import { createStackNavigator, createAppContainer } from 'react-navigation';
+import {
+  createStackNavigator,
+  createAppContainer,
+  createBottomTabNavigator,
+} from 'react-navigation';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import instagramLogo from './assets/instagram_logo.png';
 import {
   StyleSheet,
@@ -87,7 +92,7 @@ HomeScreen.navigationOptions = ({ navigation }) => {
   };
 };
 
-const AppNavigator = createStackNavigator(
+const HomeStack = createStackNavigator(
   {
     Home: {
       screen: HomeScreen,
@@ -104,4 +109,31 @@ const AppNavigator = createStackNavigator(
   }
 );
 
-export default createAppContainer(AppNavigator);
+const TabNavigator = createBottomTabNavigator(
+  {
+    Home: HomeStack,
+    Settings: () => null,
+  },
+  {
+    defaultNavigationOptions: ({ navigation }) => ({
+      tabBarIcon: ({ focused, horizontal, tintColor }) => {
+        const { routeName } = navigation.state;
+        let IconComponent = Ionicons;
+        let iconName;
+        if (routeName === 'Home') {
+          iconName = `ios-information-circle${focused ? '' : '-outline'}`;
+          // Sometimes we want to add badges to some icons.
+          // You can check the implementation below.
+          // IconComponent = HomeIconWithBadge;
+        } else if (routeName === 'Settings') {
+          iconName = `ios-options`;
+        }
+
+        // You can return any component that you like here!
+        return <IconComponent name={iconName} size={25} color={tintColor} />;
+      }
+    })
+  }
+);
+
+export default createAppContainer(TabNavigator);
