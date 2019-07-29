@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   Easing,
 } from 'react-native';
-import { Avatar, Button } from 'react-native-elements';
+import { Avatar, Button, ListItem } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Feather';
 import arrowBackImg from './assets/arrow_back.png';
 
@@ -147,9 +147,19 @@ function AlbumDetailView(props) {
             />
             {isImageLoaded && (
               <>
-                <Text>{state.albumTitle}</Text>
-                <Text>{state.albumName}</Text>
-                <Text>{state.website}</Text>
+                <ListItem
+                  rightIcon={{ name: 'chevron-right' }}
+                  title={state.albumTitle}
+                  onPress={() => props.navigation.navigate('ListDetailView', {
+                    title: state.albumTitle
+                  })}
+                />
+                <ListItem
+                  title={state.albumName}
+                />
+                <ListItem
+                  title={state.website}
+                />
               </>
             )}
           </ScrollView>

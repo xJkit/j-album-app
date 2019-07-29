@@ -11,6 +11,7 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import AlbumDetailView from './AlbumDetailView';
+import ListDetailView from './ListDetailView';
 
 const useAlbums = quantity => {
   const [albums, setAlbums] = useState([]);
@@ -94,6 +95,9 @@ const AppNavigator = createStackNavigator(
     AlbumDetailView: {
       screen: AlbumDetailView,
     },
+    ListDetailView: {
+      screen: ListDetailView,
+    }
   },
   {
     initialRouteName: 'Home',
