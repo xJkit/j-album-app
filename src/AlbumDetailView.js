@@ -1,5 +1,6 @@
 import React, { useReducer, useEffect, useState } from 'react';
 import { ActivityIndicator, View, Text, Image, ScrollView, Dimensions } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import arrowBackImg from './assets/arrow_back.png';
 
 const initialState = {
@@ -68,6 +69,7 @@ function AlbumDetailView(props) {
               <Text>{state.albumName}</Text>
               <Text>{state.singerName}</Text>
               <Text>{state.website}</Text>
+              <Icon name="rocket" size={30} />
             </>
           )}
         </ScrollView>
