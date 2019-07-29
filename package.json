@@ -6,6 +6,7 @@
     "postinstall": "npm run link",
     "start": "react-native start",
     "start:ios": "react-native run-ios --simulator=\"iPhone 8\"",
+    "start:and": "react-native run-android",
     "link": "cd ios && pod install",
     "test": "jest"
   },
