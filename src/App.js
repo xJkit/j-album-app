@@ -4,6 +4,8 @@ import {
   createAppContainer,
   createBottomTabNavigator,
 } from 'react-navigation';
+import createAnimatedSwitchNavigator from 'react-navigation-animated-switch';
+import { Transition } from 'react-native-reanimated';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import instagramLogo from './assets/instagram_logo.png';
 import {
@@ -17,6 +19,7 @@ import {
 } from 'react-native';
 import AlbumDetailView from './AlbumDetailView';
 import ListDetailView from './ListDetailView';
+import CameraView from './CameraView';
 
 const useAlbums = quantity => {
   const [albums, setAlbums] = useState([]);
@@ -92,6 +95,7 @@ HomeScreen.navigationOptions = ({ navigation }) => {
         name="ios-camera"
         size={30}
         style={{ marginLeft: 12 }}
+        onPress={() => navigation.navigate('CameraView')}
       />
     ),
     headerBackTitle: null,
@@ -108,7 +112,7 @@ const HomeStack = createStackNavigator(
     },
     ListDetailView: {
       screen: ListDetailView,
-    }
+    },
   },
   {
     initialRouteName: 'Home',
@@ -142,4 +146,20 @@ const TabNavigator = createBottomTabNavigator(
   }
 );
 
-export default createAppContainer(TabNavigator);
+const RootSwitch = createAnimatedSwitchNavigator(
+  { TabNavigator, CameraView },
+  {
+    initialRouteName: 'TabNavigator',
+    transition: (
+      <Transition.Together>
+        <Transition.Out
+          type="slide-right"
+          durationMs={400}
+        />
+        <Transition.In type="fade" durationMs={500} />
+      </Transition.Together>
+    )
+  }
+)
+
+export default createAppContainer(RootSwitch);
