@@ -43,6 +43,7 @@ class Menu extends React.Component {
   };
 
   componentDidMount() {
+    console.log('Album Detail View!!!!!');
     Animated.timing(
       // Animate value over time
       this.state.paddingBottom, // The value to drive
