@@ -84,8 +84,14 @@ HomeScreen.navigationOptions = ({ navigation }) => {
       <Image
         source={instagramLogo}
         style={{ height: '80%' }}
-        resizeMethod="auto"
         resizeMode="contain"
+      />
+    ),
+    headerLeft: (
+      <Ionicons
+        name="ios-camera"
+        size={30}
+        style={{ marginLeft: 12 }}
       />
     ),
     headerBackTitle: null,
